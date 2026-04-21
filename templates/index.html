@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #1a2980;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .search-box {
+            display: flex;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 20px 30px;
+            border: none;
+            font-size: 1.1rem;
+            outline: none;
+            background: #f8f9fa;
+        }
+
+        .search-btn {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+            border: none;
+            padding: 0 40px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .weather-display {
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .city-name {
+            font-size: 2.5rem;
+            color: #1a2980;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .temp {
+            font-size: 5rem;
+            font-weight: 300;
+            color: #222;
+            margin-right: 30px;
+        }
+
+        .weather-icon {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+
+        .weather-desc {
+            font-size: 1.8rem;
+            color: #666;
+            text-transform: capitalize;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .detail-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #1a2980;
+        }
+
+        .detail-title {
+            font-size: 1rem;
+            color: #777;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .unit {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .error-message {
+            background: #ffeaea;
+            color: #d32f2f;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .weather-main {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .temp {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+                border-radius: 16px;
+            }
+            
+            .search-input, .search-btn {
+                border-radius: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-cloud-sun"></i> Weather App</h1>
+            <p class="subtitle">Get real-time weather information for any city worldwide</p>
+        </header>
+
+        <form id="weatherForm" method="POST">
+            <div class="search-box">
+                <input type="text" class="search-input" name="city" placeholder="Enter city name (e.g., London, Tokyo)" required autofocus>
+                <button type="submit" class="search-btn">Search <i class="fas fa-search"></i></button>
+            </div>
+        </form>
+
+        <div id="errorContainer" class="error-message">
+            <i class="fas fa-exclamation-triangle"></i> <span id="errorText">City not found. Please try again.</span>
+        </div>
+
+        <div id="weatherContainer" class="weather-display">
+            <h2 class="city-name"><i class="fas fa-map-marker-alt"></i> <span id="cityName">London</span></h2>
+            
+            <div class="weather-main">
+                <div class="temp"><span id="temperature">18</span><span class="unit">°C</span></div>
+                <img class="weather-icon" id="weatherIcon" src="https://openweathermap.org/img/wn/10d@2x.png" alt="Weather Icon">
+                <div class="weather-desc" id="weatherDescription">Clear sky</div>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="detail-icon"><i class="fas fa-temperature-high"></i></div>
+                    <div class="detail-title">Feels Like</div>
+                    <div class="detail-value"><span id="feelsLike">17</span><span class="unit">°C</span></div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon"><i class="fas fa-tint"></i></div>
+                    <div class="detail-title">Humidity</div>
+                    <div class="detail-value"><span id="humidity">65</span><span class="unit">%</span></div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon"><i class="fas fa-wind"></i></div>
+                    <div class="detail-title">Wind Speed</div>
+                    <div class="detail-value"><span id="windSpeed">5.5</span><span class="unit">m/s</span></div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon"><i class="fas fa-compress-alt"></i></div>
+                    <div class="detail-title">Pressure</div>
+                    <div class="detail-value"><span id="pressure">1013</span><span class="
